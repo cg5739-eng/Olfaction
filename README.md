@@ -2,6 +2,10 @@
 
 A 2D simulation of a robot locating an odor source using four directional air intakes and proportional control.
 
+## Browser demo
+
+Once GitHub Pages is enabled, open https://cg5739-eng.github.io/Olfaction/ — no installation required. The browser version uses the same 100 × 100 grid, 0.025 s timestep, finite-volume transport, Neumann Poisson aspiration solver and proportional controller as the Python version. Click **Easy demo** for a short still-air localization example, or select a ventilation mode and start a new experiment.
+
 ## Physics
 
 The room is represented by a 5 × 5 m concentration field, not individual particles. Odor is continuously emitted by a stationary source and transported by advection and diffusion:
