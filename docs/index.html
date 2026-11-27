@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Interactive 2D simulation of directional robotic odor source localization.">
+<title>Olfaction | Robot simulation</title>
+<style>
+:root{color-scheme:dark;--bg:#10151d;--panel:#171e28;--line:#303d4c;--text:#edf1f6;--muted:#a8b5c6;--accent:#59dce4}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:1500px;margin:auto;padding:24px 28px 36px}header{display:flex;align-items:end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:20px}h1{margin:0;font-size:clamp(25px,3vw,38px);letter-spacing:-.045em;line-height:1.15}h2{margin:0;font-size:17px;letter-spacing:-.015em}p{margin:.3em 0}a{color:var(--accent)}.muted{color:var(--muted);font-size:13px}.eyebrow{color:var(--accent);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.15em;margin-bottom:5px}.layout{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(0,1fr);gap:16px;align-items:start}.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}.head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px}.status{font-size:13px;font-weight:650;color:var(--accent)}.status[data-state="reached"]{color:#a9efae}.status[data-state="error"]{color:#ff9d94}.map{width:100%;aspect-ratio:1.08;display:block;touch-action:pan-y;cursor:crosshair}.chart{width:100%;height:270px;display:block}.legend{display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px;font-size:12px;color:var(--muted)}.legend span{display:inline-flex;align-items:center;gap:6px}.dot{width:9px;height:9px;border-radius:50%;background:var(--c);display:inline-block}.scale{height:9px;flex:1;min-width:90px;border-radius:5px;background:linear-gradient(90deg,#080617,#30104b,#76216b,#b63b60,#ef8051,#fcf6bd)}.colorbar{display:flex;gap:9px;align-items:center;font-size:11px;color:var(--muted);margin:8px 0 12px}.side{display:grid;gap:16px}.readings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}.reading{border:1px solid var(--line);padding:8px 11px;border-radius:8px;min-width:0}.reading strong{display:block;font-size:19px;font-variant-numeric:tabular-nums}.reading span{color:var(--muted);font-size:12px}.control{margin:12px 0}.control label{display:flex;justify-content:space-between;gap:8px;font-weight:550;font-size:13px}.control output{color:var(--accent);font-variant-numeric:tabular-nums;font-weight:400}input[type=range]{width:100%;accent-color:var(--accent);margin:5px 0 0;height:24px}button,select{font:inherit;color:var(--text);background:#232e3c;border:1px solid #405165;border-radius:8px;padding:10px 12px;min-height:44px}button{cursor:pointer}button:hover{background:#304255}button:focus-visible,select:focus-visible,input:focus-visible,canvas:focus-visible{outline:2px solid var(--accent);outline-offset:3px}button:disabled{opacity:.5;cursor:not-allowed}.primary{color:#11252b;background:var(--accent);border-color:var(--accent);font-weight:700}.primary:hover{background:#9de9ed}.buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.place{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}.place select{min-height:38px;padding:7px 10px}#mode{width:100%;margin-top:5px}.note{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;margin-top:13px}.footer{margin-top:16px;color:var(--muted);font-size:12px}.time{font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px}
+@media(max-width:830px){main{padding:16px 12px 24px}.layout{grid-template-columns:1fr}.side{grid-template-columns:1fr 1fr}.panel{padding:12px}.chart{height:245px}}
+@media(max-width:560px){.side{grid-template-columns:1fr}.map{aspect-ratio:1.03}.chart{height:230px}}
+</style>
+<script defer src="model.js"></script>
+<script defer src="ui.js"></script>
+</head>
+<body><main>
+<header><div><div class="eyebrow">Robotic source localization</div><h1>Olfaction</h1><p class="muted">A 2D passive-scalar transport and four-direction aspiration simulation.</p></div><a href="https://github.com/cg5739-eng/Olfaction">Python model &amp; documentation</a></header>
+<div class="layout">
+<section class="panel"><div class="head"><h2>Room concentration</h2><span class="time" id="time">t = 0.00 s</span></div>
+<canvas class="map" id="map" tabindex="0" aria-label="Five by five meter room, concentration heatmap, total airflow vectors, source and robot. Choose a placement target below and click the map to reposition it. Use arrow keys while focused to nudge that target.">Room concentration map.</canvas>
+<div class="colorbar"><span>0</span><div class="scale"></div><span id="scaleMax">0.01 a.u.</span></div>
+<div class="legend"><span><i class="dot" style="--c:#fff"></i>Odor source (star)</span><span><i class="dot" style="--c:#59dce4"></i>Robot &amp; path</span><span>→ Total airflow</span><span>Faint cyan → local total flow</span></div>
+<div class="place"><label for="target">Click map to move:</label><select id="target"><option value="source">Odor source</option><option value="robot">Robot</option></select><span class="muted">Right-click also moves the robot.</span></div>
+<p class="note">The circular body is drawn to scale (30 cm diameter). Its four inlets modify airflow; the body itself is not an impermeable obstacle. Concentration colors rescale to the current maximum.</p></section>
+<div class="side">
+<section class="panel"><div class="head"><h2>Aspiration signals</h2><span class="muted">Concentration (a.u.)</span></div>
+<div class="readings"><div class="reading"><span><i class="dot" style="--c:#ff9e77"></i> +X</span><strong id="r0">0</strong></div><div class="reading"><span><i class="dot" style="--c:#69d8ff"></i> −X</span><strong id="r1">0</strong></div><div class="reading"><span><i class="dot" style="--c:#a4e2a0"></i> +Y</span><strong id="r2">0</strong></div><div class="reading"><span><i class="dot" style="--c:#d2a5ff"></i> −Y</span><strong id="r3">0</strong></div></div>
+<canvas class="chart" id="chart" aria-label="Four aspiration concentration measurements over simulation time.">Concentration time series.</canvas>
+<p class="muted">The robot follows opposing concentration differences. The graph freezes when the robot reaches the source.</p></section>
+<section class="panel"><div class="head"><h2>Simulation controls</h2><span id="status" class="status" role="status">Paused</span></div>
+<div class="control"><label for="mode">Ventilation</label><select id="mode"><option>Still</option><option>Uniform</option><option selected>Recirculation</option><option>Unsteady</option></select></div>
+<div class="control"><label for="gain">Proportional gain <output id="gainVal">0.50</output></label><input id="gain" type="range" min="0" max="5" step=".05" value=".5"></div>
+<div class="control"><label for="wind">Wind (m/s) <output id="windVal">0.15</output></label><input id="wind" type="range" min="0" max=".25" step=".005" value=".15"></div>
+<div class="control"><label for="suction">Suction per inlet (m²/s) <output id="suctionVal">0.012</output></label><input id="suction" type="range" min="0" max=".02" step=".001" value=".012"></div>
+<div class="control"><label for="speed">Playback speed <output id="speedVal">12 steps/frame</output></label><input id="speed" type="range" min="1" max="100" step="1" value="12"></div>
+<div class="buttons"><button id="play" class="primary">Start</button><button id="reset">Reset</button><button id="warm">Pre-fill 60 s</button><button id="easy">Easy demo</button></div>
+<p class="note">Easy demo starts in still air with the robot 0.8 m from the source, then pre-fills for 6 s. Faster playback does not change the 0.025 s physics timestep. Playback may be limited by device performance.</p></section>
+</div></div>
+<p class="footer">Ideal, instantaneous sensors. Synthetic ventilation. Arbitrary concentration units. Automatic stop uses the true source location (20 cm capture radius), not a robot-side detection algorithm.</p>
+<noscript><p>JavaScript is required to run the simulation.</p></noscript>
+</main></body></html>
